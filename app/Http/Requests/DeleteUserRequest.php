@@ -43,6 +43,6 @@ class DeleteUserRequest extends FormRequest
             new JsonResponse([
                 'success' => false,
                 'errors' => $validator->errors()
-            ], 422));
+            ], 400));
     }
 }

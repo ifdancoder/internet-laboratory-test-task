@@ -35,7 +35,7 @@ class UserController
                 'user' => (new UserResource($user_array['user']))->toArray($request),
                 'token' => $user_array['token']
                 ]
-            ], 200);
+            ], 201);
         }
 
         return new JsonResponse(['success' => false], 400);
@@ -50,7 +50,7 @@ class UserController
                 'user' => (new UserResource($user_array['user']))->toArray($request),
                 'token' => $user_array['token']
                 ]
-            ], 200);
+            ], 201);
         }
 
         return new JsonResponse(['success' => false], 400);
@@ -59,7 +59,7 @@ class UserController
     public function deleteUser(DeleteUserRequest $request) {
         $deleted = $this->userService->deleteUser($request->validated()['id']);
 
-        return new JsonResponse(['success' => $deleted], 200);
+        return new JsonResponse(['success' => $deleted], 201);
     }
 
     public function getUser(FindUserRequest $request)
@@ -81,7 +81,7 @@ class UserController
         $user = $this->userService->updateUser($id, $validated);
 
         if ($user) {
-            return new JsonResponse(['success' => true, 'data' => (new UserResource($user))->toArray($request)], 200);
+            return new JsonResponse(['success' => true, 'data' => (new UserResource($user))->toArray($request)], 201);
         }
 
         return new JsonResponse(['success' => false], 400);
