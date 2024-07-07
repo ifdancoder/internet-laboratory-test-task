@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Gate;
+
 use App\Models\User;
 use \Auth;
 
@@ -33,6 +35,9 @@ class UserService {
     public function deleteUser(int $id)
     {
         $user = User::find($id);
+
+        Gate::authorize('delete', $user);
+
         $deleted = $user->delete();
 
         return $deleted;
@@ -45,9 +50,17 @@ class UserService {
         return $user;
     }
 
+    public function getUserList()
+    {
+        return User::all();
+    }
+
     public function updateUser(int $id, array $data)
     {
         $user = User::find($id);
+        
+        Gate::authorize('update', $user);
+
         $user->update($data);
         $user->save();
 

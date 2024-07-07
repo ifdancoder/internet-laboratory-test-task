@@ -25,7 +25,6 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'numeric|exists:users,id',
             'email' => 'email|unique:users',
         ];
     }
@@ -33,8 +32,6 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'id.numeric' => 'ID должен быть числом',
-            'id.exists' => 'Пользователь не найден',
             'email.email' => 'Неверный формат почты',
             'email.unique' => 'Пользователь с таким email уже существует',
         ];

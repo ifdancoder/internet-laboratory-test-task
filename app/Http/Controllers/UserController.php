@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UsersCollection;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Validator;
@@ -10,10 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\RegistrationRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Requests\AuthRequest;
-use App\Http\Requests\FindUserRequest;
-use App\Http\Requests\DeleteUserRequest;
 
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use App\Services\UserService;
 
@@ -56,15 +56,19 @@ class UserController
         return new JsonResponse(['success' => false], 400);
     }
 
-    public function deleteUser(DeleteUserRequest $request) {
-        $deleted = $this->userService->deleteUser($request->validated()['id']);
+    public function deleteUser(Request $request, int $id) {
+        $deleted = $this->userService->deleteUser($id);
+        
+        if ($deleted) {
+            return new JsonResponse(['success' => true], 201);
+        }
 
-        return new JsonResponse(['success' => $deleted], 201);
+        return new JsonResponse(['success' => false], 400);
     }
 
-    public function getUser(FindUserRequest $request)
+    public function getUser(Request $request, int $id)
     {
-        $user = $this->userService->getUser($request->validated()['id']);
+        $user = $this->userService->getUser($id);
 
         if ($user) {
             return new JsonResponse(['success' => true, 'data' => (new UserResource($user))->toArray($request)], 200);
@@ -73,12 +77,20 @@ class UserController
         return new JsonResponse(['success' => false], 400);
     }
 
-    public function updateUser(UserRequest $request)
+    public function getUsers(Request $request)
     {
-        $validated = $request->validated();
-        $id = $validated['id'];
-        unset($validated['id']);
-        $user = $this->userService->updateUser($id, $validated);
+        $users = $this->userService->getUserList();
+
+        if ($users) {
+            return new JsonResponse(['success' => true, 'data' => (new UserCollection($users))->toArray($request)], 200);
+        }
+
+        return new JsonResponse(['success' => false], 400);
+    }
+
+    public function updateUser(UserRequest $request, int $id)
+    {
+        $user = $this->userService->updateUser($id, $request->validated());
 
         if ($user) {
             return new JsonResponse(['success' => true, 'data' => (new UserResource($user))->toArray($request)], 201);
